@@ -22,6 +22,5 @@ task :release do
   # Push git tag to remote
   sh "git push origin v#{version}"
 
-  puts "Tagged and pushed v#{version}"
-  puts "Skipped pushing gem to RubyGems"
+  puts "Tagged and pushed v#{version} - the release workflow will now begin"
 end
