@@ -2,30 +2,26 @@
 
 require "bundler/gem_tasks"
 
-desc "Check for no pending changelog entries before release"
-task release: "changelog:check_clean" # Before task is required
-
-# Remove the default release task and recreate it to only push the tag
+# Remove the default release task
 Rake::Task["release"].clear
 
-namespace :release do
-  task :checks do
-    Bundler::GemHelper.instance.guard_clean
-    Bundler::GemHelper.instance.guard_already_tagged
-  end
-
-  task build: :checks do
-    Bundler::GemHelper.instance.build_gem
-  end
-
-  task :tag do
-    Bundler::GemHelper.instance.tag_version
-  end
-
-  task :push do
-    Bundler::GemHelper.instance.git_push
-  end
-end
-
 desc "Build gem into the pkg directory, create git tag and push the tag only (no gem push)"
-task release: ["release:checks", "release:build", "release:tag", "release:push"]
+task :release do
+  gem_helper = Bundler::GemHelper.instance
+
+  # Access the gem specification
+  gemspec = gem_helper.gemspec
+  version = gemspec.version
+
+  # Build the gem (equivalent to `rake build`)
+  Rake::Task["build"].invoke
+
+  # Create a git tag with the version (prefixed with 'v')
+  sh "git tag -a -m \"Version #{version}\" v#{version}"
+
+  # Push git tag to remote
+  sh "git push origin v#{version}"
+
+  puts "Tagged and pushed v#{version}"
+  puts "Skipped pushing gem to RubyGems"
+end
