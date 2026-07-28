@@ -22,11 +22,11 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.3
         with:
           persist-credentials: false
 
-      - uses: ruby/setup-ruby@d8d83c3960843afb664e821fed6be52f37da5267 # pin@v1.231.0
+      - uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # pin@v1.313.0
         with:
           bundler-cache: false
 
@@ -42,7 +42,7 @@ jobs:
         run: script/build
 
       - name: upload artifact
-        uses: actions/upload-artifact@4.6.2
+        uses: actions/upload-artifact@v7.0.1
         id: upload-artifact
         with:
           path: "${{ steps.build.outputs.gem_path }}"
@@ -56,11 +56,11 @@ jobs:
       packages: write
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.3
         with:
           persist-credentials: false
 
-      - uses: actions/download-artifact@54124fbd881f8ce794405a06896c93c49c17463e
+      - uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
           artifact-ids: ${{ needs.build.outputs.artifact-id }}
 
@@ -74,7 +74,7 @@ jobs:
         run: |
           GEM_HOST_API_KEY=${GITHUB_TOKEN} gem push --key github --host https://rubygems.pkg.github.com/${OWNER} $ARTIFACT_PATH/${GEM_NAME}-${GEM_VERSION}.gem
 
-      - uses: ruby/setup-ruby@d8d83c3960843afb664e821fed6be52f37da5267 # pin@v1.231.0
+      - uses: ruby/setup-ruby@89f90524b88a01fe6e0b732220432cc6142926af # pin@v1.313.0
         with:
           bundler-cache: false
 
@@ -82,7 +82,7 @@ jobs:
         run: script/bootstrap
 
       - name: Configure RubyGems Credentials
-        uses: rubygems/configure-rubygems-credentials@e3f5097339179e0d4c7321ab44209e7e02446746 # pin@main
+        uses: rubygems/configure-rubygems-credentials@abfabee9aa68f1c2c95a6f58c91d826e5fac33da # pin@main
 
       - name: sign ruby gem
         env:
@@ -126,12 +126,12 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/download-artifact@54124fbd881f8ce794405a06896c93c49c17463e
+      - uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
           artifact-ids: ${{ needs.build.outputs.artifact-id }}
 
       - name: attest build provenance
-        uses: actions/attest-build-provenance@2.2.3
+        uses: actions/attest-build-provenance@v4.1.0
         with:
           subject-path: "artifact/${{ needs.build.outputs.gem_path }}"
 
@@ -141,7 +141,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/download-artifact@54124fbd881f8ce794405a06896c93c49c17463e
+      - uses: actions/download-artifact@484a0b528fb4d7bd804637ccb632e47a0e638317
         with:
           artifact-ids: ${{ needs.build.outputs.artifact-id }}
 
